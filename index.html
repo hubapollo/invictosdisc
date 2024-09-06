@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste DISC</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 20px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .question-card:hover {
+            transform: scale(1.02);
+        }
+
+        .question h3 {
+            margin-bottom: 10px;
+        }
+
+        .question input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .print-button:hover {
+            background-color: #45a049;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress {
+            width: 0;
+            height: 10px;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+
+        .chart-section {
+            margin-top: 30px;
+        }
+
+        .profile-details {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-details h3 {
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .profile-details p {
+            margin: 5px 0;
+        }
+
+        /* Estilo de impressão */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .result, .result * {
+                visibility: visible;
+            }
+            .result {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste DISC</h1>
+        <p>Por favor, responda ao teste de acordo com quem você realmente é, não como você deseja ser.</p>
+        <div class="form-group">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" required>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <!-- Perguntas -->
+        <form id="disc-form">
+            <div class="question-card">
+                <h3>1. Em uma reunião de equipe, meu foco principal costuma ser:</h3>
+                <label><input type="radio" name="q1" value="S"> Criar um clima de estabilidade e confiança.</label><br>
+                <label><input type="radio" name="q1" value="C"> Explorar novas ideias e perspectivas.</label><br>
+                <label><input type="radio" name="q1" value="I"> Inspirar e motivar os membros da equipe.</label><br>
+                <label><input type="radio" name="q1" value="D"> Acompanhar o progresso do projeto.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>2. Quando estou planejando um projeto, eu geralmente:</h3>
+                <label><input type="radio" name="q2" value="I"> Encorajo a criatividade e inovação entre a equipe.</label><br>
+                <label><input type="radio" name="q2" value="D"> Me concentro em detalhes e prazos.</label><br>
+                <label><input type="radio" name="q2" value="C"> Analiso todas as possibilidades antes de começar.</label><br>
+                <label><input type="radio" name="q2" value="S"> Asseguro que o planejamento minimize estresse e incerteza.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>3. Em um ambiente com colegas, eu prefiro:</h3>
+                <label><input type="radio" name="q3" value="I"> Estimular um ambiente de energia positiva e otimismo.</label><br>
+                <label><input type="radio" name="q3" value="C"> Discutir abordagens teóricas ou técnicas.</label><br>
+                <label><input type="radio" name="q3" value="D"> Concluir minhas tarefas eficientemente.</label><br>
+                <label><input type="radio" name="q3" value="S"> Criar um clima de estabilidade e confiança.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>4. Quando recebo uma tarefa de um superior, minha primeira reação é:</h3>
+                <label><input type="radio" name="q4" value="I"> Pensar em como posso agregar valor com minhas ideias.</label><br>
+                <label><input type="radio" name="q4" value="D"> Determinar a melhor forma de completá-la rapidamente.</label><br>
+                <label><input type="radio" name="q4" value="C"> Analisar todos os dados e detalhes antes de começar.</label><br>
+                <label><input type="radio" name="q4" value="S"> Integrar a tarefa de forma suave ao meu fluxo de trabalho.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>5. Em situações de conflito, minha abordagem típica é:</h3>
+                <label><input type="radio" name="q5" value="S"> Criar um espaço seguro para todos expressarem suas preocupações.</label><br>
+                <label><input type="radio" name="q5" value="D"> Resolver a situação rapidamente.</label><br>
+                <label><input type="radio" name="q5" value="C"> Examinar a causa raiz do conflito antes de agir.</label><br>
+                <label><input type="radio" name="q5" value="I"> Promover uma comunicação aberta e honesta.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>6. Ao definir metas para minha equipe, eu geralmente:</h3>
+                <label><input type="radio" name="q6" value="I"> Defino metas que inspirem e motivem a equipe.</label><br>
+                <label><input type="radio" name="q6" value="C"> Analiso a viabilidade das metas com base em dados.</label><br>
+                <label><input type="radio" name="q6" value="S"> Asseguro que as metas sejam realistas e alcançáveis.</label><br>
+                <label><input type="radio" name="q6" value="D"> Estabeleço metas desafiadoras e claras.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>7. Quando enfrento um problema inesperado, eu:</h3>
+                <label><input type="radio" name="q7" value="I"> Encorajo uma abordagem criativa para resolver o problema.</label><br>
+                <label><input type="radio" name="q7" value="D"> Tomo decisões rápidas para solucioná-lo.</label><br>
+                <label><input type="radio" name="q7" value="C"> Coleto informações detalhadas antes de decidir.</label><br>
+                <label><input type="radio" name="q7" value="S"> Busco uma solução que minimize o impacto emocional.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>8. No dia a dia, eu prefiro:</h3>
+                <label><input type="radio" name="q8" value="I"> Aproveitar oportunidades para socializar e trocar ideias.</label><br>
+                <label><input type="radio" name="q8" value="D"> Seguir um plano bem definido.</label><br>
+                <label><input type="radio" name="q8" value="C"> Explorar maneiras de melhorar o que já está funcionando.</label><br>
+                <label><input type="radio" name="q8" value="S"> Manter uma rotina previsível e tranquila.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>9. Quando se trata de seguir políticas e normas, minha tendência é:</h3>
+                <label><input type="radio" name="q9" value="I"> Questionar e sugerir melhorias nas normas.</label><br>
+                <label><input type="radio" name="q9" value="S"> Segui-las, assegurando que todos estejam de acordo.</label><br>
+                <label><input type="radio" name="q9" value="C"> Avaliar se as normas são atuais e aplicáveis.</label><br>
+                <label><input type="radio" name="q9" value="D"> Segui-las rigorosamente para maximizar eficiência.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>10. No que diz respeito à estrutura física do escritório, eu prefiro:</h3>
+                <label><input type="radio" name="q10" value="I"> Um layout que promova criatividade e interação.</label><br>
+                <label><input type="radio" name="q10" value="D"> Um espaço que facilite a produtividade.</label><br>
+                <label><input type="radio" name="q10" value="C"> Um design que inspire eficiência e precisão.</label><br>
+                <label><input type="radio" name="q10" value="S"> Um ambiente que seja acolhedor e previsível.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>11. Minha maneira preferida de comunicar-se é:</h3>
+                <label><input type="radio" name="q11" value="I"> Com entusiasmo, envolvendo os outros na conversa.</label><br>
+                <label><input type="radio" name="q11" value="C"> Com clareza e suporte de dados.</label><br>
+                <label><input type="radio" name="q11" value="D"> Diretamente, para evitar mal-entendidos.</label><br>
+                <label><input type="radio" name="q11" value="S"> De forma gentil e ponderada, assegurando clareza.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>12. Quando penso sobre o ambiente de trabalho ideal, imagino:</h3>
+                <label><input type="radio" name="q12" value="I"> Um lugar cheio de energia e inovação.</label><br>
+                <label><input type="radio" name="q12" value="D"> Um lugar onde tudo funciona de forma eficiente.</label><br>
+                <label><input type="radio" name="q12" value="C"> Um lugar que encoraje a análise e precisão.</label><br>
+                <label><input type="radio" name="q12" value="S"> Um lugar onde todos se sintam seguros e confiantes.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>13. Em reuniões de planejamento, minha contribuição é:</h3>
+                <label><input type="radio" name="q13" value="I"> Estimular ideias e sugestões criativas.</label><br>
+                <label><input type="radio" name="q13" value="D"> Focar em resultados e prazos.</label><br>
+                <label><input type="radio" name="q13" value="C"> Propor novas formas de abordar o projeto com base em dados.</label><br>
+                <label><input type="radio" name="q13" value="S"> Assegurar que todos estejam confortáveis com o plano.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>14. Ao tomar decisões importantes, minha abordagem é:</h3>
+                <label><input type="radio" name="q14" value="I"> Buscar consenso através de discussão aberta.</label><br>
+                <label><input type="radio" name="q14" value="D"> Optar pela solução mais direta e eficaz.</label><br>
+                <label><input type="radio" name="q14" value="C"> Analisar todos os dados antes de decidir.</label><br>
+                <label><input type="radio" name="q14" value="S"> Assegurar que a decisão leve em conta todas as necessidades emocionais.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>15. Se houvesse uma mudança repentina em processos ou tarefas, eu:</h3>
+                <label><input type="radio" name="q15" value="I"> Usaria a oportunidade para explorar novas abordagens.</label><br>
+                <label><input type="radio" name="q15" value="D"> Ajustaria rapidamente para manter a eficiência.</label><br>
+                <label><input type="radio" name="q15" value="C"> Avaliaria as melhores práticas antes de implementar a mudança.</label><br>
+                <label><input type="radio" name="q15" value="S"> Faria ajustes para que a transição fosse suave para todos.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>16. Em um projeto, meu principal interesse é:</h3>
+                <label><input type="radio" name="q16" value="I"> Encorajar a inovação e colaboração criativa.</label><br>
+                <label><input type="radio" name="q16" value="D"> Concluir com eficiência e dentro do prazo.</label><br>
+                <label><input type="radio" name="q16" value="C"> Explorar abordagens baseadas em dados e precisão.</label><br>
+                <label><input type="radio" name="q16" value="S"> Manter a harmonia e estabilidade do projeto.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>17. Na hora de resolver problemas, minha tendência é:</h3>
+                <label><input type="radio" name="q17" value="I"> Encorajar a equipe a pensar fora da caixa.</label><br>
+                <label><input type="radio" name="q17" value="D"> Agir rapidamente para solucioná-los.</label><br>
+                <label><input type="radio" name="q17" value="C"> Fazer uma análise detalhada para uma solução informada.</label><br>
+                <label><input type="radio" name="q17" value="S"> Evitar que o problema afete a moral do time.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>18. Em relação a metas, prefiro que sejam:</h3>
+                <label><input type="radio" name="q18" value="I"> Motivadoras e inovadoras.</label><br>
+                <label><input type="radio" name="q18" value="D"> Claras e desafiadoras.</label><br>
+                <label><input type="radio" name="q18" value="C"> Baseadas em dados e análises precisas.</label><br>
+                <label><input type="radio" name="q18" value="S"> Realistas e tranquilas.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>19. Quando estou enfrentando um desafio, eu:</h3>
+                <label><input type="radio" name="q19" value="I"> Utilizo minha criatividade para encontrar soluções.</label><br>
+                <label><input type="radio" name="q19" value="D"> Busco soluções rápidas e eficazes.</label><br>
+                <label><input type="radio" name="q19" value="C"> Examino todas as opções com atenção aos detalhes.</label><br>
+                <label><input type="radio" name="q19" value="S"> Considero o impacto emocional antes de agir.</label>
+            </div>
+
+            <div class="question-card">
+                <h3>20. Em termos de política organizacional, eu:</h3>
+                <label><input type="radio" name="q20" value="I"> Sugiro inovações e melhorias nas políticas.</label><br>
+                <label><input type="radio" name="q20" value="D"> Sigo as diretrizes para garantir eficiência.</label><br>
+                <label><input type="radio" name="q20" value="C"> Questiono e analiso se as políticas são atuais e relevantes.</label><br>
+                <label><input type="radio" name="q20" value="S"> Asseguro que todos se sintam confortáveis com as políticas.</label>
+            </div>
+
+            <!-- Botão de Enviar -->
+            <input type="button" class="submit-button" value="Enviar" onclick="calculateProfile()">
+        </form>
+    </div>
+
+    <!-- Resultado -->
+    <div class="container result" id="result-container" style="display:none;">
+        <h2>Resultado do Teste DISC</h2>
+        <p id="result-text"></p>
+        <div class="chart-section">
+            <canvas id="discChart" width="400" height="300"></canvas>
+        </div>
+        <div class="profile-details" id="profile-details"></div>
+        <button class="print-button" onclick="printResults()">Imprimir Resultados</button>
+    </div>
+
+    <script>
+        const profiles = {
+            "D": {
+                title: "Visionário (D)",
+                emocoes: "Expressa raiva quando está sob pressão.",
+                alvo: "Superar obstáculos para alcançar resultados.",
+                avaliar: "Baseia-se em sua habilidade de obter resultados.",
+                influenciar: "Direto e assertivo, gosta de liderar e desafiar o status quo.",
+                valorEquipe: "Iniciador de ação, impetuoso, está sempre em movimento e busca resultados.",
+                exagera: "Pode se tornar autoritário, impaciente."
+            },
+            "I": {
+                title: "Persuasivo (I)",
+                emocoes: "Otimista, expressa entusiasmo.",
+                alvo: "Criar um ambiente positivo, estabelecer relações pessoais.",
+                avaliar: "Baseia-se em sua capacidade de se relacionar.",
+                influenciar: "Usa charme e motivação pessoal.",
+                valorEquipe: "Motiva e inspira outros, cria um ambiente positivo.",
+                exagera: "Pode se tornar superficial, desorganizado."
+            },
+            "DI": {
+                title: "Inspirador (D = I)",
+                emocoes: "Energético e confiante.",
+                alvo: "Criar mudanças e inspirar os outros.",
+                avaliar: "Baseia-se na capacidade de impactar e motivar.",
+                influenciar: "Mistura de assertividade e charme.",
+                valorEquipe: "Inicia ideias inovadoras, inspira ação.",
+                exagera: "Pode se tornar impulsivo, negligenciar detalhes."
+            },
+            "DS": {
+                title: "Conquistador (D/S)",
+                emocoes: "Controlado, mas pode ser passivo-agressivo.",
+                alvo: "Resolver problemas de forma eficiente.",
+                avaliar: "Baseia-se na capacidade de concluir tarefas.",
+                influenciar: "Através de soluções práticas.",
+                valorEquipe: "Capaz de lidar com crises, resolve problemas rapidamente.",
+                exagera: "Pode parecer insensível ou indiferente."
+            },
+            "ID": {
+                title: "Incentivador (I/D)",
+                emocoes: "Confia nas pessoas, entusiasta.",
+                alvo: "Manter amizades, obter autoridade e prestígio.",
+                avaliar: "Baseia-se na aceitação positiva e no entusiasmo dos outros.",
+                influenciar: "Através de persuasão verbal, elogios e favores.",
+                valorEquipe: "Otimista, capaz de promover projetos, realiza projetos por meio de pessoas.",
+                exagera: "Otimismo e bajulação."
+            },
+            "ISC": {
+                title: "Realista (I/S/C - I/C/S)",
+                emocoes: "Empático, amigável.",
+                alvo: "Criar um ambiente harmonioso.",
+                avaliar: "Baseia-se em sua capacidade de criar harmonia.",
+                influenciar: "Através de cooperação e compromisso.",
+                valorEquipe: "Mediação de conflitos, apoio constante.",
+                exagera: "Pode ser indeciso ou evitar confrontos."
+            },
+            "DC": {
+                title: "Criativo (D/C - D/C/S)",
+                emocoes: "Confiança em suas próprias ideias.",
+                alvo: "Desenvolver novas soluções.",
+                avaliar: "Baseia-se na originalidade e criatividade.",
+                influenciar: "Através de ideias inovadoras.",
+                valorEquipe: "Traz novas ideias e soluções criativas.",
+                exagera: "Pode ignorar detalhes práticos."
+            },
+            "IS": {
+                title: "Conselheiro (I/S)",
+                emocoes: "Caloroso e compreensivo.",
+                alvo: "Estabelecer relações de confiança.",
+                avaliar: "Baseia-se em sua capacidade de entender e apoiar.",
+                influenciar: "Através de compreensão e empatia.",
+                valorEquipe: "Apoio emocional, mediação de conflitos.",
+                exagera: "Pode evitar conflitos necessários."
+            },
+            "IC": {
+                title: "Promotor (I/C)",
+                emocoes: "Sociável e acolhedor.",
+                alvo: "Criar um ambiente de aceitação.",
+                avaliar: "Baseia-se na capacidade de se adaptar.",
+                influenciar: "Através de comunicação e adaptação.",
+                valorEquipe: "Traz criatividade e flexibilidade.",
+                exagera: "Pode ser inconsistente ou pouco confiável."
+            },
+            "S": {
+                title: "Especialista (S)",
+                emocoes: "Calmo e paciente.",
+                alvo: "Manter a estabilidade e a segurança.",
+                avaliar: "Baseia-se na lealdade e consistência.",
+                influenciar: "Através de paciência e consistência.",
+                valorEquipe: "Suporte constante, estabilidade.",
+                exagera: "Pode resistir a mudanças."
+            },
+            "C": {
+                title: "Pensador Objetivo (C)",
+                emocoes: "Focado e preciso.",
+                alvo: "Manter precisão e ordem.",
+                avaliar: "Baseia-se em dados e precisão.",
+                influenciar: "Através de fatos e lógica.",
+                valorEquipe: "Preciso e analítico, mantém a qualidade.",
+                exagera: "Pode ser excessivamente crítico."
+            },
+            "SCI": {
+                title: "Defensor (S/C/I - S/I/C)",
+                emocoes: "Caloroso e acolhedor.",
+                alvo: "Proteger e apoiar outros.",
+                avaliar: "Baseia-se na lealdade e confiança.",
+                influenciar: "Através de compreensão e apoio.",
+                valorEquipe: "Apoio constante, harmonia.",
+                exagera: "Pode ser excessivamente protetor."
+            },
+            "SDC": {
+                title: "Questionador (S/D/C - S/C/D)",
+                emocoes: "Cauteloso e analítico.",
+                alvo: "Buscar informações e entender detalhes.",
+                avaliar: "Baseia-se em fatos e lógica.",
+                influenciar: "Através de análise e fatos.",
+                valorEquipe: "Traz precisão e análise detalhada.",
+                exagera: "Pode ser indeciso."
+            },
+            "SC": {
+                title: "Perfeccionista (S/C ou C/S)",
+                emocoes: "Preciso e focado.",
+                alvo: "Manter alta qualidade e precisão.",
+                avaliar: "Baseia-se na precisão e atenção aos detalhes.",
+                influenciar: "Através de organização e precisão.",
+                valorEquipe: "Manutenção de alta qualidade, atenção aos detalhes.",
+                exagera: "Pode ser inflexível ou crítico."
+            },
+            "ID": {
+                title: "Motivador (I/D)",
+                emocoes: "Enérgico e envolvente.",
+                alvo: "Inspirar e motivar os outros.",
+                avaliar: "Baseia-se na capacidade de gerar entusiasmo.",
+                influenciar: "Através de paixão e presença.",
+                valorEquipe: "Estabelece direção e inspira ação.",
+                exagera: "Pode negligenciar detalhes e planejamento."
+            }
+        };
+
+        function calculateProfile() {
+            const name = document.getElementById('name').value;
+            if (!name) {
+                alert('Por favor, insira seu nome.');
+                return;
+            }
+
+            const form = document.getElementById('disc-form');
+            const formData = new FormData(form);
+            const scores = { D: 0, I: 0, S: 0, C: 0 };
+
+            for (let entry of formData.entries()) {
+                scores[entry[1]]++;
+            }
+
+            const totalQuestions = 20;
+            const percentages = {
+                D: (scores.D / totalQuestions) * 100,
+                I: (scores.I / totalQuestions) * 100,
+                S: (scores.S / totalQuestions) * 100,
+                C: (scores.C / totalQuestions) * 100,
+            };
+
+            const profileKey = determineProfile(percentages);
+            const profile = profiles[profileKey];
+            displayResult(name, profile, percentages);
+        }
+
+        function determineProfile(percentages) {
+            const { D, I, S, C } = percentages;
+
+            if (D > 50 && I <= 20 && S <= 20 && C <= 20) return 'D';
+            if (I > 50 && D <= 20 && S <= 20 && C <= 20) return 'I';
+            if (S > 50 && D <= 20 && I <= 20 && C <= 20) return 'S';
+            if (C > 50 && D <= 20 && I <= 20 && S <= 20) return 'C';
+            if (D > I && D > S && C > I && C > S) return 'DC';
+            if (I > D && I > C && S > D && S > C) return 'IS';
+            if (D > S && I > C && D > C) return 'DI';
+            if (I > S && I > C) return 'ID';
+            if (D > I && S > C) return 'DS';
+            if (C > D && C > S) return 'CS';
+            if (I > D && S > C) return 'ISC';
+            if (S > D && C > I) return 'SCI';
+            if (C > D && I > S) return 'IC';
+            if (D === I) return 'DI';
+            if (S > D && C > I && C === S) return 'SDC';
+            return 'Combinado';
+        }
+
+        function displayResult(name, profile, percentages) {
+            const resultText = `${name}, seu perfil DISC é: ${profile.title}.`;
+            document.getElementById('result-text').innerText = resultText;
+
+            const ctx = document.getElementById('discChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Dominância', 'Influência', 'Estabilidade', 'Conformidade'],
+                    datasets: [{
+                        label: 'Pontuação DISC',
+                        data: [percentages.D, percentages.I, percentages.S, percentages.C],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('profile-details').innerHTML = `
+                <h3>Detalhes do Perfil</h3>
+                <p><strong>Título:</strong> ${profile.title}</p>
+                <p><strong>Emoções:</strong> ${profile.emocoes}</p>
+                <p><strong>Alvo:</strong> ${profile.alvo}</p>
+                <p><strong>Modo de Avaliar:</strong> ${profile.avaliar}</p>
+                <p><strong>Modo de Influenciar:</strong> ${profile.influenciar}</p>
+                <p><strong>Valor em Equipe:</strong> ${profile.valorEquipe}</p>
+                <p><strong>Exagera Quando:</strong> ${profile.exagera}</p>
+            `;
+
+            document.getElementById('result-container').style.display = 'block';
+
+            // Atualiza a barra de progresso para 100% ao finalizar o teste
+            document.getElementById('progress').style.width = '100%';
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
